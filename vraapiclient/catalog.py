@@ -150,10 +150,10 @@ class ConsumerClient(object):
         resources = r.json()
 
         if show == 'table':
-            table = PrettyTable(['Id', 'Name'])
+            table = PrettyTable(['Id', 'Name', 'Description', 'Lease end'])
 
             for i in resources['content']:
-                table.add_row([i['id'], i['name']])
+                table.add_row([i['id'], i['name'], i['description'], i['lease']['end']])
 
             print table
 
