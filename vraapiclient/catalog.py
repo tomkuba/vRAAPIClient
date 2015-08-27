@@ -11,14 +11,14 @@ from prettytable import PrettyTable
 class ConsumerClient(object):
     def __init__(self, host, username, password, tenant=None):
         """
-		Creates a connection to the vRA REST API using the provided
-		username and password.
-		Parameters:
-	                host = vRA Appliance fqdn
-        	        user = user account with access to the vRA portal
-                	passowrd = valid password for above user
-	                tenant = tenant for user. if this is NONE it will default to "vsphere.local"
-		"""
+        Creates a connection to the vRA REST API using the provided
+        username and password.
+        Parameters:
+            host = vRA Appliance fqdn
+            user = user account with access to the vRA portal
+            password = valid password for above user
+            tenant = tenant for user. if this is NONE it will default to "vsphere.local"
+        """
 
         if tenant is None:
             tenant = "vsphere.local"
@@ -31,19 +31,19 @@ class ConsumerClient(object):
 
     def getToken(self):
         """
-		Function that prints the bearer token for the session.
-		This is only for troubleshooting.
-		"""
+        Function that prints the bearer token for the session.
+        This is only for troubleshooting.
+        """
 
         print self.token
 
     def getResource(self, id, show='json'):
         """
-		Function that will get a vRA resource by id.
-		Parameters:
+        Function that will get a vRA resource by id.
+        Parameters:
             show = return data as a table or json object
-			id = id of the vRA resource.
-		"""
+            id = id of the vRA resource.
+        """
 
         host = self.host
         token = self.token
@@ -106,10 +106,10 @@ class ConsumerClient(object):
 
     def getResourceIdByRequestId(self, id):
         """
-		Function that will search for a resource with a matching requestId.
-		Parameters:
-			id = request id of the vRA resource.
-		"""
+        Function that will search for a resource with a matching requestId.
+        Parameters:
+            id = request id of the vRA resource.
+        """
 
         host = self.host
         token = self.token
@@ -130,10 +130,14 @@ class ConsumerClient(object):
     def getAllResources(self, show='table', limit=20):
         """
 		Function that will return all resources that are available to the current user.
+        Function that will return all resources that are available to the current user.
         Parameters:
             show = return data as a table or json object
         	limit = The number of entries per page.
 		"""
+            limit = The number of entries per page.
+
+        """
 
         host = self.host
         token = self.token
@@ -162,11 +166,11 @@ class ConsumerClient(object):
 
     def getResourceNetworking(self, id, show='json'):
         """
-		Function that will return networking information for a given resource.
-		Parameters:
+        Function that will return networking information for a given resource.
+        Parameters:
             show = return data as a table or json object
-			id = id of the vRA resource.
-		"""
+            id = id of the vRA resource.
+        """
 
         host = self.host
         token = self.token
@@ -193,11 +197,11 @@ class ConsumerClient(object):
 
     def getEntitledCatalogItems(self, show='table', limit=20):
         """
-		Function that will return all entitled catalog items for the current user.
+        Function that will return all entitled catalog items for the current user.
         Parameters:
             show = return data as a table or json object
-    		limit = The number of entries per page.
-		"""
+            limit = The number of entries per page.
+        """
 
         host = self.host
         token = self.token
@@ -227,11 +231,11 @@ class ConsumerClient(object):
 
     def getRequest(self, id, show='table'):
         """
-		Function that will return request information for a given request.
-		Parameters:
-			id = the id of the vRA request.
+        Function that will return request information for a given request.
+        Parameters:
+            id = the id of the vRA request.
             show = return data as a table or json object
-		"""
+        """
 
         host = self.host
         token = self.token
@@ -258,12 +262,11 @@ class ConsumerClient(object):
 
     def getAllRequests(self, show='table', limit=20):
         """
-		Function that will return the resource that were provisioned as a result of a given request.
-
-		Parameters:
+        Function that will return the resource that were provisioned as a result of a given request.
+        Parameters:
                 show = return data as a table or json object
-			    limit = The number of entries per page.
-		"""
+                limit = The number of entries per page.
+        """
 
         host = self.host
         token = self.token
@@ -292,10 +295,10 @@ class ConsumerClient(object):
 
     def getRequestResource(self, id):
         """
-		Function that will return the resource that were provisioned as a result of a given request.
-		Parameters:
-			id = the id of the vRA request.
-		"""
+        Function that will return the resource that were provisioned as a result of a given request.
+        Parameters:
+            id = the id of the vRA request.
+        """
 
         host = self.host
         token = self.token
@@ -315,11 +318,11 @@ class ConsumerClient(object):
 
     def requestResource(self, payload):
         """
-		Function that will submit a request based on payload.
-		payload = json body (example in request.json)
-		Parameters:
-			payload = JSON request body.
-		"""
+        Function that will submit a request based on payload.
+        payload = json body (example in request.json)
+        Parameters:
+            payload = JSON request body.
+        """
 
         host = self.host
         token = self.token
