@@ -59,9 +59,9 @@ class ConsumerClient(object):
         resource = r.json()
 
         if show == 'table':
-            table = PrettyTable(['Id', 'Name', 'Status', 'Catalog Item'])
+            table = PrettyTable(['Id', 'Name', 'Description', 'Lease end', 'Catalog Item'])
             table.add_row([
-                resource['id'], resource['name'], resource['status'],
+                resource['id'], resource['name'], resource['description'], resource['lease']['end'],
                 resource['catalogItem']['label']
             ])
 
@@ -129,14 +129,12 @@ class ConsumerClient(object):
 
     def getAllResources(self, show='table', limit=20):
         """
-		Function that will return all resources that are available to the current user.
         Function that will return all resources that are available to the current user.
         Parameters:
             show = return data as a table or json object
-        	limit = The number of entries per page.
-		"""
             limit = The number of entries per page.
 
+        Api call to /api/consumer/resources returns only basic data about Virtual Machines.
         """
 
         host = self.host
@@ -154,11 +152,50 @@ class ConsumerClient(object):
         resources = r.json()
 
         if show == 'table':
-            table = PrettyTable(['Id', 'Name', 'Description', 'Lease end'])
+            table = PrettyTable(['Id', 'Name', 'Description', 'Lease end', 'Catalog Item'])
 
             for i in resources['content']:
-                table.add_row([i['id'], i['name'], i['description'], i['lease']['end']])
+                table.add_row([i['id'], i['name'], i['description'], i['lease']['end'], i['catalogItem']['label']])
 
+            print table
+
+        elif show == 'json':
+            return resources['content']
+
+    def getAllResourcesDetailed(self, show='table', limit=20):
+        """
+        Function that will return all resources that are available to the current user.
+        Parameters:
+            show = return data as a table or json object
+            limit = The number of entries per page.
+
+        Api call to api/consumer/resources/types/Infrastructure.Machine returns detailed data about Virtual Machines.
+        """
+
+        host = self.host
+        token = self.token
+
+        url = 'https://{host}/catalog-service/api/consumer/resources/types/Infrastructure.Machine?limit={limit}&$orderby=name%20asc'.format(
+            host=host, limit=limit)
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': token
+        }
+        r = requests.get(url=url, headers=headers, verify=False)
+        checkResponse(r)
+        resources = r.json()
+
+        if show == 'table':
+            table = PrettyTable(['Id', 'Name', 'Description', 'Status', 'Lease end', 'Catalog Item'])
+            vm_status = "unknown"
+
+            for i in resources['content']:
+                for entry in i['resourceData']['entries']:
+                    if entry['key'] == 'MachineStatus':
+                        vm_status = entry['value']['value']
+                table.add_row([i['id'], i['name'], i['description'], vm_status, i['lease']['end'],
+                               i['catalogItem']['label']])
             print table
 
         elif show == 'json':
@@ -171,9 +208,6 @@ class ConsumerClient(object):
             show = return data as a table or json object
             id = id of the vRA resource.
         """
-
-        host = self.host
-        token = self.token
 
         resource = self.getResource(id)
         resourceData = resource['resourceData']['entries']
