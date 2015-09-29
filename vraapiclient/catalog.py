@@ -28,6 +28,11 @@ class ConsumerClient(object):
         self.password = password
         self.tenant = tenant
         self.token = authenticate(host, username, password, tenant)
+        self.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': self.token
+        }
 
     def getToken(self):
         """
@@ -46,14 +51,10 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/resources/{id}'.format(host=host, id=id)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
         resource = r.json()
@@ -72,21 +73,17 @@ class ConsumerClient(object):
 
     def getResourceByName(self, name, show='json'):
         """
-        Function that will get a vRA resource by id.
+        Function that will get a vRA resource by name.
         Parameters:
             show = return data as a table or json object
             name = name of the vRA resource.
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = "https://{host}/catalog-service/api/consumer/resources?$filter=name%20eq%20'{name}'".format(host=host, name=name)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
         resource = r.json()
@@ -96,8 +93,8 @@ class ConsumerClient(object):
             table = PrettyTable(['Id', 'Name', 'Status', 'Catalog Item'])
             table.add_row([
                 resource['content'][0]['id'], resource['content'][0]['name'], resource['content'][0]['status'],
-                        resource['content'][0]['catalogItem']['label']
-                    ])
+                resource['content'][0]['catalogItem']['label']
+                ])
 
             print table
 
@@ -112,20 +109,16 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = "https://{host}/catalog-service/api/consumer/resources?$filter=request%20eq%20'{id}'".format(host=host, id=id)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
         resource = r.json()
-        resourceId = resource['content'][0]['id']
+        resource_id = resource['content'][0]['id']
 
-        return resourceId
+        return resource_id
 
     def getAllResources(self, show='table', limit=20):
         """
@@ -138,20 +131,19 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/resources?limit={limit}&$orderby=name%20asc'.format(
             host=host, limit=limit)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
         resources = r.json()
 
-        if show == 'table':
+        if not resources['content']:
+            print 'You do not currently have any provisioned items to display.'
+
+        elif show == 'table':
             table = PrettyTable(['Id', 'Name', 'Description', 'Lease end', 'Catalog Item'])
 
             for i in resources['content']:
@@ -173,15 +165,11 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/resources/types/Infrastructure.Machine?limit={limit}&$orderby=name%20asc'.format(
             host=host, limit=limit)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
         resources = r.json()
@@ -210,12 +198,12 @@ class ConsumerClient(object):
         """
 
         resource = self.getResource(id)
-        resourceData = resource['resourceData']['entries']
+        resource_data = resource['resourceData']['entries']
 
-        for i in resourceData:
+        for i in resource_data:
             if i['key'] == 'NETWORK_LIST':
-                networkList = i['value']['items']
-                for j in networkList:
+                network_list = i['value']['items']
+                for j in network_list:
                     entries = j['values']['entries']
 
         if show == 'table':
@@ -238,15 +226,11 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/entitledCatalogItems?limit={limit}&$orderby=name%20asc'.format(
             host=host, limit=limit)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
         items = r.json()
@@ -272,14 +256,10 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/requests/{id}'.format(host=host, id=id)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
 
@@ -303,14 +283,10 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/requests?limit={limit}&$orderby=requestNumber%20desc'.format(host=host, limit=limit)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
 
@@ -335,14 +311,10 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/requests/{id}/resources'.format(host=host, id=id)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.get(url=url, headers=headers, verify=False)
         checkResponse(r)
 
@@ -359,20 +331,16 @@ class ConsumerClient(object):
         """
 
         host = self.host
-        token = self.token
+        headers = self.headers
 
         url = 'https://{host}/catalog-service/api/consumer/requests'.format(host=host)
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': token
-        }
+
         r = requests.post(url=url,
                           data=json.dumps(payload),
                           headers=headers,
                           verify=False)
         checkResponse(r)
 
-        id = r.headers['location'].split('/')[7]
+        request_id = r.headers['location'].split('/')[7]
 
-        return id
+        return request_id
