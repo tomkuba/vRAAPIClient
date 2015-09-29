@@ -17,6 +17,7 @@ client.getResourceNetworking(id=resourceId, show='table')
 resourceNetworking = client.getResourceNetworking(id=resourceId)
 
 #Print networking values
+resource = client.getResourceNetworking(id=resourceId, show='table')
 for i in resource:
     print([i['key'], i['value']['value']])
 
